@@ -7,9 +7,22 @@
 
 import Foundation
 
+/// フィルター
+enum FilterType: String {
+    case all = "ALL"
+    case world = "WORLD"
+    case nation = "NATION"
+    case business = "BUSINESS"
+    case technology = "TECHNOLOGY"
+    case entertainment = "ENTERTAINMENT"
+    case sports = "SPORTS"
+    case science = "SCIENCE"
+    case health = "HEALTH"
+}
+
 /// DIのためにModelの振る舞いを抽象化したProtocol
 protocol ModelProtocol {
-    func retrieveItems(completion: @escaping (Result<[Model.Article], Error>) -> Void)
+    func retrieveItems(for filterType: FilterType, completion: @escaping (Result<[Model.Article], Error>) -> Void)
     func createItems(with data: Data) -> Result<[Model.Article], Error>
 }
 
@@ -47,8 +60,19 @@ class Model: NSObject, ModelProtocol {
     private var parseError: Error?
 
     /// GoogleNEWSのRSSを取得する
-    func retrieveItems(completion: @escaping (Result<[Model.Article], Error>) -> Void) {
-        let url = URL(string:  "https://news.google.com/rss?hl=ja&gl=JP&ceid=JP:ja")!
+    func retrieveItems(for filterType: FilterType, completion: @escaping (Result<[Model.Article], Error>) -> Void) {
+        let url: URL
+        if filterType == .all {
+            guard let urlTemp = URL(string:  "https://news.google.com/rss?hl=ja&gl=JP&ceid=JP:ja") else {
+                preconditionFailure("URL不正")
+            }
+            url = urlTemp
+        } else {
+            guard let urlTemp = URL(string:  "https://news.google.com/rss/search?q=topick:\(filterType.rawValue)?hl=ja&gl=JP&ceid=JP:ja") else {
+                preconditionFailure("URL不正")
+            }
+            url = urlTemp
+        }
         URLSession.shared.dataTask(with: url, completionHandler: { [weak self] (data, response, error) in
             guard let self = self else {
                 return

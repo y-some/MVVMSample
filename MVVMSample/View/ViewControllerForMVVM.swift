@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  ViewControllerForMVVM.swift
 //  MVVMSample
 //
 //  Created by Yasuyuki Someya on 2020/10/17.
@@ -8,11 +8,11 @@
 import UIKit
 import SafariServices
 
-class ViewController: UIViewController {
+class ViewControllerForMVVM: UIViewController {
     @IBOutlet weak var tableView: UITableView!
 
     private let viewModel = ViewModel()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -28,7 +28,7 @@ class ViewController: UIViewController {
 }
 
 // MARK: - UITableViewの処理群
-extension ViewController: UITableViewDataSource, UITableViewDelegate {
+extension ViewControllerForMVVM: UITableViewDataSource, UITableViewDelegate {
     ///　行数を返す
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.viewItems.count
@@ -57,7 +57,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
 }
 
 // MARK: - ViewModelDelegate
-extension ViewController: ViewModelDelegate {
+extension ViewControllerForMVVM: ViewModelDelegate {
     /// ViewModelのステータスが変化した時の処理
     func didChange(status: Status) {
         switch status {
@@ -79,7 +79,7 @@ extension ViewController: ViewModelDelegate {
 }
 
 // MARK: - Action
-extension ViewController {
+extension ViewControllerForMVVM {
     /// UITableViewを引っ張って更新
     @objc func refresh(sender: UIRefreshControl) {
         viewModel.load()

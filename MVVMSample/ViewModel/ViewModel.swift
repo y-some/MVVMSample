@@ -51,7 +51,7 @@ class ViewModel {
     /// データ取得
     func load() {
         status = .loading
-        model.retrieveItems { [weak self] (result) in
+        model.retrieveItems(for: .all) { [weak self] (result) in
             switch result {
             case .success(let items):
                 self?.viewItems = items.map({ (article) -> ViewItem in
