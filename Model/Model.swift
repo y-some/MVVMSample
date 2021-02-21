@@ -8,8 +8,8 @@
 import Foundation
 
 /// フィルター
-enum FilterType: String {
-    case all = "ALL"
+enum FilterType: String, CaseIterable {
+    case none = "NONE"
     case world = "WORLD"
     case nation = "NATION"
     case business = "BUSINESS"
@@ -18,6 +18,20 @@ enum FilterType: String {
     case sports = "SPORTS"
     case science = "SCIENCE"
     case health = "HEALTH"
+    
+    var title: String {
+        switch self {
+        case .none: return "トップニュース"
+        case .world: return "世界"
+        case .nation: return "日本"
+        case .business: return "ビジネス"
+        case .technology: return "テクノロジー"
+        case .entertainment: return "エンタメ"
+        case .sports: return "スポーツ"
+        case .science: return "科学"
+        case .health: return "健康"
+        }
+    }
 }
 
 /// DIのためにModelの振る舞いを抽象化したProtocol
@@ -62,13 +76,13 @@ class Model: NSObject, ModelProtocol {
     /// GoogleNEWSのRSSを取得する
     func retrieveItems(for filterType: FilterType, completion: @escaping (Result<[Model.Article], Error>) -> Void) {
         let url: URL
-        if filterType == .all {
+        if filterType == .none {
             guard let urlTemp = URL(string:  "https://news.google.com/rss?hl=ja&gl=JP&ceid=JP:ja") else {
                 preconditionFailure("URL不正")
             }
             url = urlTemp
         } else {
-            guard let urlTemp = URL(string:  "https://news.google.com/rss/search?q=topick:\(filterType.rawValue)?hl=ja&gl=JP&ceid=JP:ja") else {
+            guard let urlTemp = URL(string:  "https://news.google.com/news/rss/headlines/section/topic/\(filterType.rawValue)?hl=ja&gl=JP&ceid=JP:ja") else {
                 preconditionFailure("URL不正")
             }
             url = urlTemp

@@ -21,7 +21,7 @@ enum Status {
 
 /// ViewとModelの間の情報の伝達と、Viewのための状態を保持する役割
 class ViewModel {
-    // Viewに提供するオブジェクト
+    // Viewに提供する表示用データオブジェクト
     struct ViewItem {
         let title: String
         let link: String
@@ -41,6 +41,8 @@ class ViewModel {
             delegate?.didChange(status: status)
         }
     }
+    // 現在のフィルター状態を保持
+    private(set) var filterType: FilterType = .none
 
     // テストのためにModelクラスをDIする
     private let model: ModelProtocol
@@ -49,9 +51,10 @@ class ViewModel {
     }
 
     /// データ取得
-    func load() {
+    func load(for filterType: FilterType) {
+        self.filterType = filterType
         status = .loading
-        model.retrieveItems(for: .all) { [weak self] (result) in
+        model.retrieveItems(for: filterType) { [weak self] (result) in
             switch result {
             case .success(let items):
                 self?.viewItems = items.map({ (article) -> ViewItem in
@@ -65,6 +68,10 @@ class ViewModel {
                 self?.status = .error("エラー: \(error.localizedDescription)")
             }
         }
+    }
+    
+    func reload() {
+        load(for: filterType)
     }
 }
 
